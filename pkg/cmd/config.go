@@ -81,12 +81,12 @@ func (o *confirmOptions) getArgs(cmd *cobra.Command) ([]string, error) {
 	stdout := bytes.Buffer{}
 	err := util.ExecRun(util.GetKubectlPath(), []string{"config", "view", "-o=json"}, cmd.InOrStdin(), &stdout, cmd.ErrOrStderr())
 	if err != nil {
-		return args, err
+		return nil, err
 	}
 	var config map[string]interface{}
 	err = json.Unmarshal(stdout.Bytes(), &config)
 	if err != nil {
-		return args, err
+		return nil, err
 	}
 
 	context := o.context

@@ -186,14 +186,14 @@ func (o *confirmOptions) run(cmd *cobra.Command, args []string) error {
 	var response string
 	_, _ = fmt.Fscanln(cmd.InOrStdin(), &response)
 	cmd.Println()
-	if response != "yes" {
-		cmd.PrintErr("Command aborted.\n")
-		util.Exit(1)
-		return nil
+
+	if response == "yes" {
+		// Execute the real command
+		return util.ExecRun(util.GetKubectlPath(), os.Args[1:], cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr())
 	}
 
-	// Execute the real command
-	return util.ExecRun(util.GetKubectlPath(), os.Args[1:], cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr())
+	cmd.PrintErr("Command skipped.\n")
+	return nil
 }
 
 func (o *confirmOptions) checkForNonRegularFiles() {
