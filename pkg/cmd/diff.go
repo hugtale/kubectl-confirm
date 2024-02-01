@@ -52,8 +52,13 @@ func (o *confirmOptions) diff(cmd *cobra.Command) error {
 		return err
 	}
 
+	var args []string
+	args, err = o.getArgs(cmd)
+	if err != nil {
+		return err
+	}
 	// Run kubectl diff
-	err = util.ExecRun(util.GetKubectlPath(), []string{"diff", "--filename", f.Name()}, cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr())
+	err = util.ExecRun(util.GetKubectlPath(), append(args, "diff", "--filename", f.Name()), cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr())
 	if err == nil {
 		cmd.Println("no changes detected")
 	}

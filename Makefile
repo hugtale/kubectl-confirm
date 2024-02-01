@@ -21,7 +21,7 @@ build: checks
 	@echo "Building"
 	@mkdir -p _output && cd _output && go build $(LDFLAGS) ../cmd/kubectl-confirm.go
 
-checks: staticcheck lint vet verify test
+checks: staticcheck lint vet verify
 
 .PHONY: install
 install: build

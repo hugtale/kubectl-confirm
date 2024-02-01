@@ -73,6 +73,55 @@ func (o *confirmOptions) printConfig(cmd *cobra.Command) error {
 	return nil
 }
 
+func (o *confirmOptions) getArgs(cmd *cobra.Command) ([]string, error) {
+
+	var args = []string{}
+
+	// Get the effective config
+	stdout := bytes.Buffer{}
+	err := util.ExecRun(util.GetKubectlPath(), []string{"config", "view", "-o=json"}, cmd.InOrStdin(), &stdout, cmd.ErrOrStderr())
+	if err != nil {
+		return args, err
+	}
+	var config map[string]interface{}
+	err = json.Unmarshal(stdout.Bytes(), &config)
+	if err != nil {
+		return args, err
+	}
+
+	context := o.context
+	if len(context) == 0 {
+		context = config["current-context"].(string)
+	}
+
+	args = append(args, "--context", context)
+
+	contextConfig := findContextInConfig(config, context)
+
+	cluster := o.cluster
+	if len(cluster) == 0 && contextConfig != nil && contextConfig["cluster"] != nil {
+		cluster = contextConfig["cluster"].(string)
+	}
+	args = append(args, "--cluster", cluster)
+
+	user := o.user
+	if len(user) == 0 && contextConfig != nil && contextConfig["user"] != nil {
+		user = contextConfig["user"].(string)
+	}
+	args = append(args, "--user", user)
+
+	namespace := o.namespace
+	if len(namespace) == 0 && contextConfig != nil && contextConfig["namespace"] != nil {
+		namespace = contextConfig["namespace"].(string)
+	}
+	if len(namespace) == 0 {
+		namespace = "default"
+	}
+	args = append(args, "--namespace", namespace)
+
+	return args, nil
+}
+
 func findContextInConfig(config map[string]interface{}, context string) map[string]interface{} {
 	for _, c := range config["contexts"].([]interface{}) {
 		cc := c.(map[string]interface{})
