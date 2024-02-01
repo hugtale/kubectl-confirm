@@ -52,8 +52,7 @@ func (o *confirmOptions) diff(cmd *cobra.Command) error {
 		return err
 	}
 
-	var args []string
-	args, err = o.getArgs(cmd)
+	args, err := o.getArgs(cmd)
 	if err != nil {
 		return err
 	}

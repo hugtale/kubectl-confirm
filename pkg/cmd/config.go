@@ -75,7 +75,7 @@ func (o *confirmOptions) printConfig(cmd *cobra.Command) error {
 
 func (o *confirmOptions) getArgs(cmd *cobra.Command) ([]string, error) {
 
-	var args = []string{}
+	var args []string
 
 	// Get the effective config
 	stdout := bytes.Buffer{}
